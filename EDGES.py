@@ -1,7 +1,7 @@
 # Magrinalise EDGES nuisance params
 
-from edges_estimate.likelihoods import LinearFG
-from edges_cal.modelling import LinLog
+from edges_estimate.likelihoods import LinearFG#JSC: sth went wrong with attr
+from edges_cal.modelling import LinLog # JSC: sth went wrong with attr
 import attr
 from py21cmfast.wrapper import run_lightcone
 
@@ -9,7 +9,7 @@ from py21cmfast.wrapper import run_lightcone
 from yabf import Component, Parameter
 import py21cmfast as p21c
 import numpy as np
-from functools import cached_property
+from functools import cached_property # JSC: How to install this? Can I jusn install cached_property?
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
 
 @attr.s
