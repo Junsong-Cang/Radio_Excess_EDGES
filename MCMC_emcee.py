@@ -41,6 +41,7 @@ def Get_LightCone(fR=0,L_X=40):
   z=Data[:,7]
   zmin=np.min(z)
   zmax=np.max(z)
+  os.system('echo ---- >> log.txt')
 
   user_params = p21c.UserParams(
     BOX_LEN = 500,
