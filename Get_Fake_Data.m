@@ -23,7 +23,7 @@ T21_signal=D(:,end-1);
 delete(F)
 fid=fopen(F,'w');
 for Idx=1:S(1)
-    fprintf(fid,'%f    %i    %E    %E    %E    %E    %E\n',D(Idx,1), D(Idx,2), D(Idx,3), D(Idx,4), D(Idx,5), D(Idx,6), D(Idx,7));
+    fprintf(fid,'%f    %i    %E    %E    %E    %E    %E    %f    %f\n',D(Idx,1), D(Idx,2), D(Idx,3), D(Idx,4), D(Idx,5), D(Idx,6), D(Idx,7),z(Idx), Error);
 end
 fclose(fid);
 

@@ -1,5 +1,5 @@
 clear
 
 clc
-ConvergeFile = 'Status.h5'
-index=h5read(ConvergeFile,'/index')
+ConvergeFile = 'Chains.h5'
+h5disp(ConvergeFile)

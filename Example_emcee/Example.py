@@ -4,9 +4,9 @@ import numpy as np
 import os
 import emcee
 
-nwalkers = 16
+nwalkers = 4
 ndim = 2
-n_samples = 10000
+n_samples = 100000
 ChainFile = "Chains.h5"
 ConvergeFile='Status.h5'
 
