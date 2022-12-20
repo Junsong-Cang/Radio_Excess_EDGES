@@ -78,6 +78,8 @@ def Get_LightCone(fR=0,L_X=40):
   ParamFile = Str['ParamFile']
   os.system(cmd)
   lc=p21c.outputs.LightCone.read(H5File)
+  cmd2='cat '+ ParamFile
+  os.system(cmd2)
   # Clean up
   # os.remove(ParamFile)
   # os.remove(H5File)
