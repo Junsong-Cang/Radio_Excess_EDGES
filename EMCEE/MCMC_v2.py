@@ -84,7 +84,11 @@ def Get_T21(fR=0,L_X=40):
   global Data
   z=Data[:,7]
   lc = Get_LightCone(fR, L_X)
-  return spline(lc.node_redshifts, lc.global_brightness_temp)(z)
+  z_reverse=lc.node_redshifts
+  t_reverse=lc.global_brightness_temp
+  z_axis=z_reverse[-1:0:-1]
+  t_axis=t_reverse[-1:0:-1]
+  return spline(z_axis, t_axis)(z)
 
 def log_likelihood(theta):
   'This is lnL'

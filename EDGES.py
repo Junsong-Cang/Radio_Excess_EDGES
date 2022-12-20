@@ -36,7 +36,10 @@ class AbsorptionProfile(Component):
     flag_options: p21c.FlagOptions = attr.ib()
     astro_params: p21c.AstroParams = attr.ib()    
     run_lightcone_kwargs: dict = attr.ib(factory=dict)
-    cache_loc: str = attr.ib()
+    # cache_loc: str = attr.ib()
+    # set default in attr.ib()
+    # cache_loc: str = '/home/dm/watson/21cmFAST-data/'
+    cache_loc = attr.ib(default=".")
 
     # You probably want to run the initial conditions etc and cache them...
     @cached_property
@@ -56,7 +59,7 @@ class AbsorptionProfile(Component):
         self.astro_params.update(**params)
         lc = p21c.run_lightcone(
             astro_params=self.astro_params, 
-            init_box = self.intitial_conditions, 
+            init_box = self.intial_conditions, 
             flag_options=self.flag_options,
             direc=self.cache_loc, 
             redshift=self.observed_redshifts.min(), 
@@ -76,14 +79,14 @@ if __name__ == '__main__':
     freq = data[:, 0]
     wght = data[:, 1]
     tsky = data[:, 2]
-    freq = freq[wght>1]
-    tsky = tsky[wght>1]
+    freq = freq[wght>0]
+    tsky = tsky[wght>0]
     
     # Let's fix these params around the best-guess settings
     user_params = p21c.UserParams(
-        BOX_LEN = 500,
-        HII_DIM = 20,
-        N_THREADS = 50
+        BOX_LEN = 150, # 150
+        HII_DIM = 50, # Should be at least 50
+        N_THREADS = 1
         )
     astro_params = p21c.AstroParams(
         F_STAR10 = -0.8,
@@ -115,7 +118,11 @@ if __name__ == '__main__':
 
     fg_model = LinLog(n_terms=5)
 
-    my_likelihood = LinearFG(freq, tsky, sigma=0.03, fg=fg_model, eor=eor)
+    # my_likelihood = LinearFG(freq, tsky, sigma=0.03, fg=fg_model, eor=eor)
+    my_likelihood = LinearFG(freq=freq, t_sky=tsky, var=0.03**2, fg=fg_model, eor=eor)
 
     # Then call the likelihood like this:
-    my_likelihood.logp(params=[30.0])  # params here is a list in order of the params you defined in the eor model. You can also pass a dict to make it more explicit.
+    # my_likelihood.logp(params=[2.0, 37.0])  # params here is a list in order of the params you defined in the eor model. You can also pass a dict to make it more explicit.
+    my_likelihood.partial_linear_model.logp(params=[2, 37.0])
+
+# params should be fiducials
