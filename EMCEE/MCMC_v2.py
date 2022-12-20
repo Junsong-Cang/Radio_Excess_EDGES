@@ -64,9 +64,6 @@ def Get_Passwd(fR=0,L_X=40):
   f.close
   cmd = 'python3 Run_21cmFAST.py < ' + ParamFile
   Str={'H5File':H5File,'cmd':cmd,'ParamFile':ParamFile}
-  # For debug
-  cmd2='cat '+ ParamFile
-  os.system(cmd2)
   return Str
 
 
