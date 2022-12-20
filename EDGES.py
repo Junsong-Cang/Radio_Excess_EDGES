@@ -1,7 +1,7 @@
 # Magrinalise EDGES nuisance params
 
-from edges_estimate.likelihoods import LinearFG#JSC: sth went wrong with attr
-from edges_cal.modelling import LinLog # JSC: sth went wrong with attr
+from edges_estimate.likelihoods import LinearFG
+from edges_cal.modelling import LinLog
 import attr
 from py21cmfast.wrapper import run_lightcone
 
@@ -11,6 +11,8 @@ import py21cmfast as p21c
 import numpy as np
 from functools import cached_property # JSC: How to install this? Can I jusn install cached_property?
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
+
+print('Do conda activate base first')
 
 @attr.s
 class AbsorptionProfile(Component):
@@ -22,7 +24,7 @@ class AbsorptionProfile(Component):
     # As a pre-flight test, let's fit fR and L_X param first
     # CJS: How does yabf know whether fR and L_X are astro (and not cosmo)?
     base_parameters = [
-        Parameter(name="fR", fiducial=0.0, min=0, max=100000, latex="f_{R}"),
+        Parameter(name="fR", fiducial=2.0, min=1.0, max=6.0, latex="f_{R}"),
         Parameter(name="L_X", fiducial=37.0, min=35.0, max=42.0, latex="L_x"),
     ]
 
@@ -97,25 +99,23 @@ if __name__ == '__main__':
         USE_RADIO_ACG = True
     )
     
-	eor = AbsorptionProfile(
-		observed_redshifts = 1420/freq - 1,
-		user_params = user_params,
-    	cosmo_params = p21c.CosmoParams(),
-		flag_options = flag_options,
+    eor = AbsorptionProfile(
+        observed_redshifts = 1420/freq - 1,
+        user_params = user_params,
+        cosmo_params = p21c.CosmoParams(),
+        flag_options = flag_options,
         astro_params = astro_params,
-		params = {
-            'fR': {'min': 10000, 'max': 100000}, #it doesn't make too much sense to do this linearly, maybe use log in next version?
+        params = {
+            'fR': {'min': 2.0, 'max': 6.0}, 
             'L_X':{'min':37.0,'max':42.0}
         }, # these are the params that are actually fit. The names have to be in the `base_parameters` above
-    	cache_loc = '/home/dm/watson/21cmFAST-data/'
-        run_lightcone_kwargs = {
-            "ZPRIME_STEP_FACTOR": 1.03,
-        }
-    )
+        cache_loc = '/home/dm/watson/21cmFAST-data/',
+        run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
+        )
 
     fg_model = LinLog(n_terms=5)
 
-	my_likelihood = LinearFG(freq, tsky, sigma=0.03, fg=fg_model, eor=eor)
+    my_likelihood = LinearFG(freq, tsky, sigma=0.03, fg=fg_model, eor=eor)
 
-	# Then call the likelihood like this:
-	my_likelihood.logp(params=[30.0])  # params here is a list in order of the params you defined in the eor model. You can also pass a dict to make it more explicit.
+    # Then call the likelihood like this:
+    my_likelihood.logp(params=[30.0])  # params here is a list in order of the params you defined in the eor model. You can also pass a dict to make it more explicit.
