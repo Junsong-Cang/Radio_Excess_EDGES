@@ -45,7 +45,7 @@ def Get_LightCone(fR=0,L_X=40):
   for id in range(0,Len):
 	  a=random.randint(0,9)
 	  code = code + str(a)
-  H5File = 'home/dm/watson/21cmFAST-data/LC_'+code+'.h5'
+  H5File = '/home/dm/watson/21cmFAST-data/LC_'+code+'.h5'
   ParamFile = 'inputs/MCMC_input_'+code+'.ini'
   # prepare input file
   shutil.copyfile('inputs/input_template.ini',ParamFile)
