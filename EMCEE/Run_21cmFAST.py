@@ -26,7 +26,7 @@ F0=p21c.FlagOptions._defaults_;
 
 # ---- CosmoParams ----
 if SIGMA_8==default:
-    SIGMA_8=C0['SIGMA_8'];
+    SIGMA_8=C0['SIGMA_8']
 if hlittle==default:
     hlittle=C0['hlittle']
 if OMm==default:
