@@ -60,6 +60,7 @@ def Get_LightCone(fR=0,L_X=40):
   f.write(H5File)
   f.write("'")
   f.write('\n')
+  f.write('\n')
   f.close
   # run 21cmFAST
   cmd = 'python3 Run_21cmFAST.py < ' + ParamFile
