@@ -249,7 +249,7 @@ FlagOptions=p21c.FlagOptions(
     )
 
 # ---- Run 21cmFAST ----
-LC_Quantities = ()
+LC_Quantities = ('brightness_temp','Trad_box')
 GLB_Quantities = ('brightness_temp','Trad_box')
 
 Data=p21c.run_lightcone(

@@ -17,3 +17,4 @@ print(H5File)
 print(ParamFile)
 print(cmd)
 
+os.system('python3 Run_21cmFAST.py < input_template.ini')
