@@ -26,7 +26,7 @@ Check_Interv = 10
 Converge_Thresh = 100
 
 # -------- Start --------
-Data = np.genfromtxt("Data_EDGES_2.txt")
+Data = np.genfromtxt("Data_EDGES.txt")
 
 # z=Data[:,7]
 # Er=Data[:,8]
