@@ -40,7 +40,7 @@ fig,ax=plt.subplots()
 plt.plot(n, n / Converge_Thresh, "--k")
 plt.plot(n, y)
 plt.xlim(0, n.max())
-plt.ylim(0, y.max() + 0.1 * (y.max() - y.min()))
+#plt.ylim(0, y.max() + 0.1 * (y.max() - y.min()))
 plt.xlabel("number of steps")
 plt.ylabel(r"mean $\hat{\tau}$");
 fig.savefig('Convergence.png',bbox_inches='tight',dpi=100)

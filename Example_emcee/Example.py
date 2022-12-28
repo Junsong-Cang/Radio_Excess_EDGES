@@ -7,7 +7,7 @@ import emcee
 
 nwalkers = 4
 ndim = 2
-n_samples = 100000
+n_samples = 10000
 ChainFile = "Chains.h5"
 ConvergeFile='Status.h5'
 
