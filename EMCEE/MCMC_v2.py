@@ -39,6 +39,7 @@ except FileNotFoundError:
   pass
 
 def Get_Passwd(fR=0,L_X=40):
+  # For some reason running 21cmFAST in python is too slow, so let's try doing it in command line
   # Get passwd
   Len=10 # passwd length
   code=str(random.randint(0,9))
@@ -68,7 +69,6 @@ def Get_Passwd(fR=0,L_X=40):
 
 
 def Get_LightCone(fR=0,L_X=40):
-  # Get passwd
   Str = Get_Passwd(fR,L_X)
   H5File = Str['H5File']
   cmd = Str['cmd']

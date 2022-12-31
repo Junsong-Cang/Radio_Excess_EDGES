@@ -3,16 +3,35 @@
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
 import attr
-
 # yabf: for MCMC
 from yabf import Component, Parameter
-from yabf.samplers import polychord
 import py21cmfast as p21c
 import numpy as np
 from functools import cached_property 
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
 
-print('Do conda activate base first')
+nwalkers = 40
+n_samples = 100000
+ndim = 2
+fR_Range = {'min':1,'max':7,'start':5.05}
+LX_Range = {'min':38,'max':45,'start':42.0}
+
+ChainFile = "Chains.h5"
+ConvergeFile='Status.h5'
+
+# ---- Convergence Stats ----
+# Check convergence every N iterations
+Check_Interv = 10
+# Convergence Ctiteria
+Converge_Thresh = 100
+
+# ---- Start ----
+try:
+  os.remove(ChainFile)
+  os.remove(ConvergeFile)
+except FileNotFoundError:
+  pass
+data = np.genfromtxt("Data_EDGES.txt")
 
 @attr.s
 class AbsorptionProfile(Component):
@@ -23,8 +42,8 @@ class AbsorptionProfile(Component):
     # As a pre-flight test, let's fit fR and L_X param first
     # CJS: How does yabf know whether fR and L_X are astro (and not cosmo)?
     base_parameters = [
-        Parameter(name="fR", fiducial=2.0, min=1.0, max=7.0, latex="f_{R}"),
-        Parameter(name="L_X", fiducial=37.0, min=35.0, max=45.0, latex="L_x"),
+        Parameter(name="fR", fiducial=5.05, min=1.0, max=7.0, latex="f_{R}"),
+        Parameter(name="L_X", fiducial=42.0, min=35.0, max=45.0, latex="L_x"),
     ]
 
     observed_redshifts: np.ndarray = attr.ib(kw_only=True, eq=attr.cmp_using(eq=np.array_equal))
@@ -74,9 +93,9 @@ class AbsorptionProfile(Component):
         # Don't change this.
         return ctx["eor_spectrum"]
 
-if __name__ == '__main__':
-
-    data = np.genfromtxt("Data_EDGES.txt")
+def log_likelihood(theta):
+    global data
+    fR, L_X = theta
     freq = data[:, 0]
     wght = data[:, 1]
     tsky = data[:, 2]
@@ -86,7 +105,7 @@ if __name__ == '__main__':
     # Let's fix these params around the best-guess settings
     user_params = p21c.UserParams(
         BOX_LEN = 150,
-        HII_DIM = 50, # Should be at least 50 for the official run
+        HII_DIM = 20, # Should be at least 50 for the official run
         N_THREADS = 1
         )
     astro_params = p21c.AstroParams(
@@ -110,8 +129,8 @@ if __name__ == '__main__':
         flag_options = flag_options,
         astro_params = astro_params,
         params = {
-            'fR': {'min': 2.0, 'max': 7.0}, 
-            'L_X':{'min':37.0,'max':45.0}
+            'fR': {'min': 2.0, 'max': 6.0}, 
+            'L_X':{'min':37.0,'max':42.0}
         }, # these are the params that are actually fit. The names have to be in the `base_parameters` above
         cache_loc = '/home/dm/watson/21cmFAST-data/cache/',
         run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
@@ -122,20 +141,53 @@ if __name__ == '__main__':
     my_likelihood = LinearFG(freq=freq, t_sky=tsky, var=0.03**2, fg=fg_model, eor=eor)
 
     # Then call the likelihood like this:
-    
-    a = my_likelihood.partial_linear_model.logp(params=[2, 42.0]) # params here should be fiducials for params you want to fit
-    print(a)
+    Chi2 = - my_likelihood.partial_linear_model.logp(params=[fR, L_X]) # params here should be fiducials for params you want to fit
 
-    sampler = polychord(
-        my_likelihood.partial_linear_model,                  # The actual likelihood to sample from
-        save_full_config = False,                            # Otherwise would save a YAML file that is hard to read.
-        output_dir = "Chains",       # Directory in which to save all the output chains.
-        output_prefix = "PopII_Test",                        # A prefix for all files output.
-        sampler_kwargs = {                                   # Anything that can be passed to PolychordSettings,
-            "nlives": 256                                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
-        }
-    )
+def log_prior(theta):
+  fR, L_X = theta
+  if fR_Range['min'] < fR < fR_Range['max'] and LX_Range['min'] < L_X < LX_Range['max']:
+    return 0.0
+  else:
+    return -np.inf
 
-    # Actually run the sampling. You'll get a bunch of files in the output dir, that can
-    # be read by getdist.
-    samples = sampler.sample()               
+def log_probability(theta):
+  lp = log_prior(theta)
+  if not np.isfinite(lp):
+    return -np.inf
+  else:
+    return lp + log_likelihood(theta)
+
+coords=[fR_Range['start'], LX_Range['start']] + 1e-4 * np.random.randn(nwalkers, ndim)
+backend = emcee.backends.HDFBackend(ChainFile)
+backend.reset(nwalkers, ndim)
+sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability,backend=backend)
+# We'll track how the average autocorrelation time estimate changes
+index = 0
+autocorr = np.empty(n_samples)
+# This will be useful to testing convergence
+old_tau = np.inf
+
+# Now we'll sample for up to n_samples steps
+for sample in sampler.sample(coords, iterations=n_samples, progress=True):
+    # Only check convergence every 100 steps
+    if sampler.iteration % Check_Interv:
+        continue
+
+    # Compute the autocorrelation time so far
+    # Using tol=0 means that we'll always get an estimate even
+    # if it isn't trustworthy
+    tau = sampler.get_autocorr_time(tol=0)
+    autocorr[index] = np.mean(tau)
+    index += 1
+
+    h5f=h5py.File(ConvergeFile, 'w')
+    h5f.create_dataset('autocorr', data=autocorr)
+    h5f.create_dataset('index', data=index)
+    h5f.close()
+
+    # Check convergence
+    converged = np.all(tau * Converge_Thresh < sampler.iteration)
+    converged &= np.all(np.abs(old_tau - tau) / tau < 1/Converge_Thresh)
+    if converged:
+        break
+    old_tau = tau
