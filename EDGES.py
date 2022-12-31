@@ -3,10 +3,10 @@
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
 import attr
-from py21cmfast.wrapper import run_lightcone
 
 # yabf: for MCMC
 from yabf import Component, Parameter
+from yabf.samplers import polychord
 import py21cmfast as p21c
 import numpy as np
 from functools import cached_property 
@@ -113,7 +113,7 @@ if __name__ == '__main__':
             'fR': {'min': 2.0, 'max': 6.0}, 
             'L_X':{'min':37.0,'max':42.0}
         }, # these are the params that are actually fit. The names have to be in the `base_parameters` above
-        cache_loc = '/home/dm/watson/21cmFAST-data/cache/',
+        cache_loc = '21cmfast-cache',
         run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
         )
 
@@ -126,3 +126,16 @@ if __name__ == '__main__':
     
     my_likelihood.partial_linear_model.logp(params=[2, 37.0]) # params here should be fiducials for params you want to fit
 
+    sampler = polychord(
+        my_likelihood.partial_linear_model,  # The actual likelihood to sample from
+        save_full_config = False,            # Otherwise would save a YAML file that is hard to read.
+        output_dir = "polychord-runs",       # Directory in which to save all the output chains.
+        output_prefix = "SimpleTest",        # A prefix for all files output.
+        sampler_kwargs = {                   # Anything that can be passed to PolychordSettings,
+            "nlives": 256                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
+        }
+    )
+
+    # Actually run the sampling. You'll get a bunch of files in the output dir, that can
+    # be read by getdist.
+    samples = sampler.sample()               
