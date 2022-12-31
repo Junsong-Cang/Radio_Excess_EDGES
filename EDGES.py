@@ -113,7 +113,7 @@ if __name__ == '__main__':
             'fR': {'min': 2.0, 'max': 6.0}, 
             'L_X':{'min':37.0,'max':42.0}
         }, # these are the params that are actually fit. The names have to be in the `base_parameters` above
-        cache_loc = '21cmfast-cache',
+        cache_loc = '/home/dm/watson/21cmFAST-data/cache/',
         run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
         )
 
@@ -128,12 +128,12 @@ if __name__ == '__main__':
     print(a)
 
     sampler = polychord(
-        my_likelihood.partial_linear_model,  # The actual likelihood to sample from
-        save_full_config = False,            # Otherwise would save a YAML file that is hard to read.
-        output_dir = "polychord-runs",       # Directory in which to save all the output chains.
-        output_prefix = "SimpleTest",        # A prefix for all files output.
-        sampler_kwargs = {                   # Anything that can be passed to PolychordSettings,
-            "nlives": 256                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
+        my_likelihood.partial_linear_model,                  # The actual likelihood to sample from
+        save_full_config = False,                            # Otherwise would save a YAML file that is hard to read.
+        output_dir = "Chains",       # Directory in which to save all the output chains.
+        output_prefix = "PopII_Test",                        # A prefix for all files output.
+        sampler_kwargs = {                                   # Anything that can be passed to PolychordSettings,
+            "nlives": 256                                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
         }
     )
 
