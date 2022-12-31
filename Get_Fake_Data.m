@@ -3,12 +3,12 @@ clear
 
 LineWidth=2
 PlotSize=25
-Error=0.1
+Error=0.01
 
 clc
 
 D='/Users/cangtao/IHEPBox/Projects/GitHub/Radio_Excess_EDGES/Data_EDGES_v0.txt';
-F='/Users/cangtao/IHEPBox/Projects/GitHub/Radio_Excess_EDGES/Data_EDGES_2.txt';
+F='/Users/cangtao/IHEPBox/Projects/GitHub/Radio_Excess_EDGES/Data_EDGES.txt';
 D=importdata(D);
 D=D.data;
 

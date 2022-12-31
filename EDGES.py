@@ -124,5 +124,6 @@ if __name__ == '__main__':
     # Then call the likelihood like this:
     # my_likelihood.logp(params=[2.0, 37.0])  # params here is a list in order of the params you defined in the eor model. You can also pass a dict to make it more explicit.
     
-    my_likelihood.partial_linear_model.logp(params=[2, 37.0]) # params here should be fiducials for params you want to fit
+    a = my_likelihood.partial_linear_model.logp(params=[2, 37.0]) # params here should be fiducials for params you want to fit
+    print(a)
 
