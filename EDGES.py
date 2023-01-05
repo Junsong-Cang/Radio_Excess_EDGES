@@ -12,7 +12,7 @@ import numpy as np
 from functools import cached_property 
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
 
-print('Do conda activate base first')
+# print('Do conda activate base first')
 
 @attr.s
 class AbsorptionProfile(Component):
@@ -122,14 +122,13 @@ if __name__ == '__main__':
     my_likelihood = LinearFG(freq=freq, t_sky=tsky, var=0.03**2, fg=fg_model, eor=eor)
 
     # Then call the likelihood like this:
-    
     a = my_likelihood.partial_linear_model.logp(params=[2, 42.0]) # params here should be fiducials for params you want to fit
     print(a)
 
     sampler = polychord(
         my_likelihood.partial_linear_model,                  # The actual likelihood to sample from
         save_full_config = False,                            # Otherwise would save a YAML file that is hard to read.
-        output_dir = "Chains",       # Directory in which to save all the output chains.
+        output_dir = "Chains",                               # Directory in which to save all the output chains.
         output_prefix = "PopII_Test",                        # A prefix for all files output.
         sampler_kwargs = {                                   # Anything that can be passed to PolychordSettings,
             "nlives": 256                                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5

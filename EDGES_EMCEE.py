@@ -3,14 +3,20 @@
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
 import attr
+import h5py
 # yabf: for MCMC
 from yabf import Component, Parameter
 import py21cmfast as p21c
 import numpy as np
+import os
+import emcee
 from functools import cached_property 
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
+import time
+import random
+import shutil
 
-nwalkers = 40
+nwalkers = 4
 n_samples = 100000
 ndim = 2
 fR_Range = {'min':1,'max':7,'start':5.05}
@@ -106,7 +112,7 @@ def log_likelihood(theta):
     user_params = p21c.UserParams(
         BOX_LEN = 150,
         HII_DIM = 20, # Should be at least 50 for the official run
-        N_THREADS = 1
+        N_THREADS = 10
         )
     astro_params = p21c.AstroParams(
         F_STAR10 = -0.8,
@@ -142,6 +148,7 @@ def log_likelihood(theta):
 
     # Then call the likelihood like this:
     Chi2 = - my_likelihood.partial_linear_model.logp(params=[fR, L_X]) # params here should be fiducials for params you want to fit
+    return Chi2
 
 def log_prior(theta):
   fR, L_X = theta

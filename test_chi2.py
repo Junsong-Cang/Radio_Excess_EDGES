@@ -6,7 +6,7 @@ import attr
 
 # yabf: for MCMC
 from yabf import Component, Parameter
-from yabf.samplers import polychord
+# from yabf.samplers import polychord
 import py21cmfast as p21c
 import numpy as np
 from functools import cached_property 
@@ -86,8 +86,8 @@ if __name__ == '__main__':
     # Let's fix these params around the best-guess settings
     user_params = p21c.UserParams(
         BOX_LEN = 150,
-        HII_DIM = 50, # Should be at least 50 for the official run
-        N_THREADS = 1
+        HII_DIM = 20, # Should be at least 50 for the official run
+        N_THREADS = 10
         )
     astro_params = p21c.AstroParams(
         F_STAR10 = -0.8,
@@ -117,20 +117,21 @@ if __name__ == '__main__':
         run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
         )
 
-    fg_model = LinLog(n_terms=5)
+    fg_model = LinLog(n_terms=4)
 
     my_likelihood = LinearFG(freq=freq, t_sky=tsky, var=0.03**2, fg=fg_model, eor=eor)
 
     # Then call the likelihood like this:
     # my_likelihood.logp(params=[2.0, 37.0])  # params here is a list in order of the params you defined in the eor model. You can also pass a dict to make it more explicit.
 
-    pfR=np.arange(3,5,0.1)
+    pfR=np.arange(3,6,0.3)
     LnL=pfR
     id=0
+    print("id  fR  LnL")
     for fR in pfR:
         LnL[id] = my_likelihood.partial_linear_model.logp(params=[fR, 37.0]) # params here should be fiducials for params you want to fit
+        print(id,fR,LnL[id])
         id=id+1
-        print(id,LnL[id])
     
     TestFile='test.h5'
     h5f=h5py.File(TestFile, 'w')
