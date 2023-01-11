@@ -130,10 +130,12 @@ sampler = polychord(
     my_likelihood.partial_linear_model,                  # The actual likelihood to sample from
     save_full_config = False,                            # Otherwise would save a YAML file that is hard to read.
     output_dir = "Chains",                               # Directory in which to save all the output chains.
-    output_prefix = "PopII_Test",                        # A prefix for all files output.
-    # sampler_kwargs = {                                   # Anything that can be passed to PolychordSettings,
-    #     "nlives": 256                                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
-    # }
+    output_prefix = "Simple_Test",                        # A prefix for all files output.
+    sampler_kwargs = {                                   # Anything that can be passed to PolychordSettings,
+        # "nlives": 256                                  # should be nlive, typo?
+        "nlive": 1000,                                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
+        "feedback":3
+    }
 )
 
 # Actually run the sampling. You'll get a bunch of files in the output dir, that can

@@ -1,0 +1,79 @@
+PolyChord: MPI is already initilised, not initialising, and will not finalize
+
+PolyChord: Next Generation Nested Sampling
+copyright: Will Handley, Mike Hobson & Anthony Lasenby
+  version: 1.20.1
+  release: 1st June 2021
+    email: wh260@mrao.cam.ac.uk
+
+Run Settings
+nlive    :     200
+nDims    :       2
+nDerived :       0
+Doing Clustering
+Synchronous parallelisation
+Generating equally weighted posteriors
+Generating weighted posteriors
+Clustering on posteriors
+Writing a resume file to Chains/PopII_Test.resume
+
+generating live points
+
+
+all live points generated
+
+Speed  1 =  0.241E+02 seconds
+number of repeats:           10
+started sampling
+
+_________________
+lives      | 200 |
+phantoms   |1214 |
+posteriors | 201 |
+equals     |   1 |
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+ncluster   =       1 /       1
+ndead      =                 201
+nposterior =                 201
+nequals    =                   1
+nlike      =                3408
+<nlike>    =          16.04   (           1.60 per slice )
+log(Z)     =     -3365891.85 +/-  0.83
+log(Z_1)   =     -3365891.85 +/-  0.83 (still evaluating)
+
+
+
+_________________
+lives      | 200 |
+phantoms   |1549 |
+posteriors | 402 |
+equals     |   1 |
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+ncluster   =       1 /       1
+ndead      =                 402
+nposterior =                 402
+nequals    =                   1
+nlike      =                8981
+<nlike>    =          27.87   (           2.79 per slice )
+log(Z)     =      -144919.72 +/-  0.84
+log(Z_1)   =      -144919.72 +/-  0.84 (still evaluating)
+
+
+
+_________________
+lives      | 200 |
+phantoms   |1602 |
+posteriors | 603 |
+equals     |   1 |
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+ncluster   =       1 /       1
+ndead      =                 603
+nposterior =                 603
+nequals    =                   1
+nlike      =               16203
+<nlike>    =          36.11   (           3.61 per slice )
+log(Z)     =       -71276.79 +/-  0.84
+log(Z_1)   =       -71276.79 +/-  0.84 (still evaluating)
+
+
+

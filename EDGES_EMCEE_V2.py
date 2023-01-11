@@ -6,7 +6,7 @@ import attr
 
 # yabf: for MCMC
 from yabf import Component, Parameter
-from yabf.samplers import polychord
+from yabf.samplers import emcee
 import py21cmfast as p21c
 import numpy as np
 from functools import cached_property 
@@ -126,11 +126,11 @@ my_likelihood = LinearFG(freq=freq, t_sky=tsky, var=0.03**2, fg=fg_model, eor=eo
 # a = my_likelihood.partial_linear_model.logp(params=[2, 42.0])
 # print(a)
 
-sampler = polychord(
+sampler = emcee(
     my_likelihood.partial_linear_model,                  # The actual likelihood to sample from
     save_full_config = False,                            # Otherwise would save a YAML file that is hard to read.
     output_dir = "Chains",                               # Directory in which to save all the output chains.
-    output_prefix = "PopII_Test",                        # A prefix for all files output.
+    output_prefix = "PopII_Test_EMCEE",                        # A prefix for all files output.
     # sampler_kwargs = {                                   # Anything that can be passed to PolychordSettings,
     #     "nlives": 256                                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
     # }
@@ -138,4 +138,4 @@ sampler = polychord(
 
 # Actually run the sampling. You'll get a bunch of files in the output dir, that can
 # be read by getdist.
-samples = sampler.sample()
+samples = sampler.sample(nsteps=10000)
