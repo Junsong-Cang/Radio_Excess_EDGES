@@ -1,5 +1,4 @@
-# Magrinalise EDGES nuisance params
-
+# Sample EDGES likelihood using EMCEE using my interpretation of Chi2
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
 import attr

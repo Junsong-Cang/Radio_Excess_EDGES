@@ -131,6 +131,8 @@ sampler = emcee(
     save_full_config = False,                            # Otherwise would save a YAML file that is hard to read.
     output_dir = "Chains",                               # Directory in which to save all the output chains.
     output_prefix = "PopII_Test_EMCEE",                        # A prefix for all files output.
+    output_file_prefix = "PopII_Test_EMCEE_file",
+    nwalkers = 4,
     # sampler_kwargs = {                                   # Anything that can be passed to PolychordSettings,
     #     "nlives": 256                                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
     # }
@@ -138,4 +140,4 @@ sampler = emcee(
 
 # Actually run the sampling. You'll get a bunch of files in the output dir, that can
 # be read by getdist.
-samples = sampler.sample(nsteps=10000)
+samples = sampler.sample(nsteps=10000,progress = True)
