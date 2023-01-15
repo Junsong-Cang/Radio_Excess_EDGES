@@ -19,7 +19,7 @@ nwalkers = 4
 n_samples = 100000
 ndim = 2
 fR_Range = {'min':1,'max':7,'start':5.05}
-LX_Range = {'min':38,'max':45,'start':42.0}
+LX_Range = {'min':37,'max':45,'start':42.0}
 
 ChainFile = "Chains.h5"
 ConvergeFile='Status.h5'
@@ -48,7 +48,7 @@ class AbsorptionProfile(Component):
     # CJS: How does yabf know whether fR and L_X are astro (and not cosmo)?
     base_parameters = [
         Parameter(name="fR", fiducial=5.05, min=1.0, max=7.0, latex="f_{R}"),
-        Parameter(name="L_X", fiducial=42.0, min=35.0, max=45.0, latex="L_x"),
+        Parameter(name="L_X", fiducial=42.0, min=37.0, max=45.0, latex="L_x"),
     ]
 
     observed_redshifts: np.ndarray = attr.ib(kw_only=True, eq=attr.cmp_using(eq=np.array_equal))
@@ -134,8 +134,8 @@ def log_likelihood(theta):
         flag_options = flag_options,
         astro_params = astro_params,
         params = {
-            'fR': {'min': 2.0, 'max': 6.0}, 
-            'L_X':{'min':37.0,'max':42.0}
+            'fR': {'min': 2.0, 'max': 7.0}, 
+            'L_X':{'min':37.0,'max':45.0}
         }, # these are the params that are actually fit. The names have to be in the `base_parameters` above
         cache_loc = '/home/dm/watson/21cmFAST-data/cache/',
         run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
@@ -146,8 +146,8 @@ def log_likelihood(theta):
     my_likelihood = LinearFG(freq=freq, t_sky=tsky, var=0.03**2, fg=fg_model, eor=eor)
 
     # Then call the likelihood like this:
-    Chi2 = - my_likelihood.partial_linear_model.logp(params=[fR, L_X]) # params here should be fiducials for params you want to fit
-    return Chi2
+    LnL = my_likelihood.partial_linear_model.logp(params=[fR, L_X]) # params here should be fiducials for params you want to fit
+    return LnL
 
 def log_prior(theta):
   fR, L_X = theta

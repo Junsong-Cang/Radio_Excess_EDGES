@@ -129,7 +129,7 @@ if __name__ == '__main__':
     id=0
     print("id  fR  LnL")
     for fR in pfR:
-        LnL[id] = my_likelihood.partial_linear_model.logp(params=[fR, 37.0]) # params here should be fiducials for params you want to fit
+        LnL[id] = my_likelihood.partial_linear_model.logp(params=[fR, 42.0]) # params here should be fiducials for params you want to fit
         print(id,fR,LnL[id])
         id=id+1
     
