@@ -1,7 +1,4 @@
-from multiprocessing import Pool
+import numpy as np
 
-a=1
-b=2
 
-with Pool() as b:
-	print(b)
+print("{0:.5E}".format(1.2135E12),"    {0:.5E}".format(4.5E12))
