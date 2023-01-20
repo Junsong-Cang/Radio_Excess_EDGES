@@ -1,6 +1,0 @@
-edges-analysis
-edges-estimate
-yabf
-21cmFAST
-attrs
-git+https://github.com/PolyChord/PolyChordLite@master
