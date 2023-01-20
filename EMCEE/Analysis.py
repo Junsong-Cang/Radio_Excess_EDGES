@@ -9,7 +9,7 @@ import corner
 import shutil
 
 ChainFile = "../Chains/Chains.h5"
-ConvergeFile = "Status.h5"
+ConvergeFile = "../Chains/Status.h5"
 labels = ["$\mathrm{log}_{10}f_{\mathrm{R}}$", "${\mathrm{log}}_{10}L_{\mathrm{X}}$"]
 
 Check_Interv = 10

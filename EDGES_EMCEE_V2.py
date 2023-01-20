@@ -1,4 +1,4 @@
-# Magrinalise EDGES nuisance params
+# # Magrinalise EDGES nuisance params
 
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
@@ -86,7 +86,7 @@ tsky = tsky[wght>0]
 user_params = p21c.UserParams(
     BOX_LEN = 150,
     HII_DIM = 20, # Should be at least 50 for the official run
-    N_THREADS = 10
+    N_THREADS = 10 # Set to 1 if using MPIRUN
     )
 astro_params = p21c.AstroParams(
     F_STAR10 = -0.8,
@@ -113,7 +113,8 @@ eor = AbsorptionProfile(
         'L_X':{'min':37.0,'max':45.0}
     }, # these are the params that are actually fit. The names have to be in the `base_parameters` above
     cache_loc = '/home/dm/watson/21cmFAST-data/cache/',
-    run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
+    # run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
+    run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03, 'write':False} # do not write files
     )
 
 fg_model = LinLog(n_terms=5)
@@ -139,3 +140,4 @@ sampler = emcee(
 # Actually run the sampling. You'll get a bunch of files in the output dir, that can
 # be read by getdist.
 samples = sampler.sample(nsteps=10000,progress = True)
+# samples.saveAsText(root)

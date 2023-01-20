@@ -1,4 +1,4 @@
-# Magrinalise EDGES nuisance params
+# # Magrinalise EDGES nuisance params
 
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
@@ -86,7 +86,7 @@ tsky = tsky[wght>0]
 user_params = p21c.UserParams(
     BOX_LEN = 150,
     HII_DIM = 20, # Should be at least 50 for the official run
-    N_THREADS = 10
+    N_THREADS = 10 # Set to 1 if using MPIRUN
     )
 astro_params = p21c.AstroParams(
     F_STAR10 = -0.8,

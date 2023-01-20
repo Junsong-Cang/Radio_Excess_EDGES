@@ -13,7 +13,7 @@ p1_range = {'min':-10,'max':10, 'start':1}
 p2_range = {'min':-10,'max':10, 'start':1}
 p3_range = {'min':-10,'max':10, 'start':1}
 
-n_samples = 100000
+n_samples = 10000
 ChainFile = "data/Chains.h5"
 TxtChainFile = "data/Example_EMCEE.txt"
 Getdist_Range_File = "data/Example_EMCEE.range"

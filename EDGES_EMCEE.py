@@ -21,8 +21,9 @@ ndim = 2
 fR_Range = {'min':1,'max':7,'start':5.05}
 LX_Range = {'min':37,'max':45,'start':42.0}
 
-ChainFile = "Chains.h5"
-ConvergeFile='Status.h5'
+File_Root = "EMCEE_V1/Pop_II_Test"
+# ChainFile = "Chains.h5"
+# ConvergeFile='Status.h5'
 
 # ---- Convergence Stats ----
 # Check convergence every N iterations
@@ -30,14 +31,31 @@ Check_Interv = 10
 # Convergence Ctiteria
 Converge_Thresh = 100
 
-# ---- Start ----
-try:
-  os.remove(ChainFile)
-  os.remove(ConvergeFile)
-except FileNotFoundError:
-  pass
-data = np.genfromtxt("Data_EDGES.txt")
+# ---- Initialise ----
+ChainFile = 'data/'+File_Root+'_EMCEE_Chains.h5'
+ConvergeFile = 'data/'+File_Root+'_EMCEE_Status.h5'
+Getdist_ChainFile = 'data/'+File_Root+'_EMCEE.txt'
+Getdist_Range_File =  'data/'+File_Root+'_EMCEE.range'
 
+print('ChainFile = ', ChainFile)
+print('ConvergeFile = ', ConvergeFile)
+print('Getdist_ChainFile = ', Getdist_ChainFile)
+print('Getdist_Range_File = ', Getdist_Range_File)
+
+data = np.genfromtxt("data/Data_EDGES.txt")
+try:
+    os.remove(ChainFile)
+    os.remove(ConvergeFile)
+    os.remove(TxtChainFile)
+    os.remove(Getdist_Range_File)
+except FileNotFoundError:
+	pass
+F=open(Getdist_Range_File,'w')
+print("fR       ", "{0:.5E}".format(fR_Range['min']),  "    {0:.5E}".format(fR_Range['max']), file=F)
+print("LX       ", "{0:.5E}".format(LX_Range['min']),  "    {0:.5E}".format(LX_Range['max']), file=F)
+F.close()
+
+# ---- Define Functions ----
 @attr.s
 class AbsorptionProfile(Component):
     provides = ["eor_spectrum"]
@@ -59,9 +77,7 @@ class AbsorptionProfile(Component):
     flag_options: p21c.FlagOptions = attr.ib()
     astro_params: p21c.AstroParams = attr.ib()    
     run_lightcone_kwargs: dict = attr.ib(factory=dict)
-    # cache_loc: str = attr.ib()
     # set default in attr.ib()
-    # cache_loc: str = '/home/dm/watson/21cmFAST-data/'
     cache_loc = attr.ib(default="/home/dm/watson/21cmFAST-data/cache/")
 
     # You probably want to run the initial conditions etc and cache them...
@@ -99,7 +115,7 @@ class AbsorptionProfile(Component):
         return ctx["eor_spectrum"]
 
 def log_likelihood(theta):
-    global data
+    global data, fR_Range, LX_Range
     fR, L_X = theta
     freq = data[:, 0]
     wght = data[:, 1]
@@ -134,11 +150,11 @@ def log_likelihood(theta):
         flag_options = flag_options,
         astro_params = astro_params,
         params = {
-            'fR': {'min': 2.0, 'max': 7.0}, 
-            'L_X':{'min':37.0,'max':45.0}
+            'fR': {'min': fR_Range['min'], 'max': fR_Range['max']}, 
+            'L_X':{'min': LX_Range['min'],'max': LX_Range['max']}
         }, # these are the params that are actually fit. The names have to be in the `base_parameters` above
         cache_loc = '/home/dm/watson/21cmFAST-data/cache/',
-        run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
+        run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03,"write":False}
         )
 
     fg_model = LinLog(n_terms=5)
@@ -150,6 +166,7 @@ def log_likelihood(theta):
     return LnL
 
 def log_prior(theta):
+  global fR_Range, LX_Range
   fR, L_X = theta
   if fR_Range['min'] < fR < fR_Range['max'] and LX_Range['min'] < L_X < LX_Range['max']:
     return 0.0
@@ -159,11 +176,19 @@ def log_prior(theta):
 def log_probability(theta):
   lp = log_prior(theta)
   if not np.isfinite(lp):
-    return -np.inf
+    LogP = -np.inf
   else:
-    return lp + log_likelihood(theta)
+    LogP = lp + log_likelihood(theta)
+  # Print out getdist chains in equal weight
+  Chi2 = -2 * LogP
+  F=open(TxtChainFile,'a')
+  Weight = 1.0
+  fR, LX = theta
+  print("{0:.5E}".format(Weight), "    {0:.5E}".format(Chi2), "    {0:.5E}".format(fR), "    {0:.5E}".format(LX), file=F)
+  F.close()
+  return LogP
 
-coords=[fR_Range['start'], LX_Range['start']] + 1e-4 * np.random.randn(nwalkers, ndim)
+Start_Location=[fR_Range['start'], LX_Range['start']] + 1e-4 * np.random.randn(nwalkers, ndim)
 backend = emcee.backends.HDFBackend(ChainFile)
 backend.reset(nwalkers, ndim)
 sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability,backend=backend)
@@ -174,7 +199,7 @@ autocorr = np.empty(n_samples)
 old_tau = np.inf
 
 # Now we'll sample for up to n_samples steps
-for sample in sampler.sample(coords, iterations=n_samples, progress=True):
+for sample in sampler.sample(Start_Location, iterations=n_samples, progress=True):
     # Only check convergence every 100 steps
     if sampler.iteration % Check_Interv:
         continue
