@@ -1,4 +1,4 @@
-# Sample EDGES likelihood using EMCEE using my interpretation of Chi2
+# Sample EDGES likelihood my own EMCEE
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
 import attr
@@ -22,8 +22,6 @@ fR_Range = {'min':1,'max':7,'start':5.05}
 LX_Range = {'min':37,'max':45,'start':42.0}
 
 File_Root = "EMCEE_V1/Pop_II_Test"
-# ChainFile = "Chains.h5"
-# ConvergeFile='Status.h5'
 
 # ---- Convergence Stats ----
 # Check convergence every N iterations
@@ -37,16 +35,11 @@ ConvergeFile = 'data/'+File_Root+'_EMCEE_Status.h5'
 Getdist_ChainFile = 'data/'+File_Root+'_EMCEE.txt'
 Getdist_Range_File =  'data/'+File_Root+'_EMCEE.range'
 
-print('ChainFile = ', ChainFile)
-print('ConvergeFile = ', ConvergeFile)
-print('Getdist_ChainFile = ', Getdist_ChainFile)
-print('Getdist_Range_File = ', Getdist_Range_File)
-
 data = np.genfromtxt("data/Data_EDGES.txt")
 try:
     os.remove(ChainFile)
     os.remove(ConvergeFile)
-    os.remove(TxtChainFile)
+    os.remove(Getdist_ChainFile)
     os.remove(Getdist_Range_File)
 except FileNotFoundError:
 	pass
@@ -108,7 +101,7 @@ class AbsorptionProfile(Component):
         # spline requires z to be in increasing order
         z = lc.node_redshifts[-1:0:-1]
         T21 = lc.global_brightness_temp[-1:0:-1]
-        return spline(z, T21)(self.observed_redshifts)
+        return spline(z, T21)(self.observed_redshifts)/1000.0
 
     def spectrum(self, ctx, **params):
         # Don't change this.
@@ -174,6 +167,7 @@ def log_prior(theta):
     return -np.inf
 
 def log_probability(theta):
+  global Getdist_ChainFile
   lp = log_prior(theta)
   if not np.isfinite(lp):
     LogP = -np.inf
@@ -181,7 +175,7 @@ def log_probability(theta):
     LogP = lp + log_likelihood(theta)
   # Print out getdist chains in equal weight
   Chi2 = -2 * LogP
-  F=open(TxtChainFile,'a')
+  F=open(Getdist_ChainFile,'a')
   Weight = 1.0
   fR, LX = theta
   print("{0:.5E}".format(Weight), "    {0:.5E}".format(Chi2), "    {0:.5E}".format(fR), "    {0:.5E}".format(LX), file=F)

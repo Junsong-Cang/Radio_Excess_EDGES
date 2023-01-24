@@ -1,4 +1,4 @@
-# # Magrinalise EDGES nuisance params
+# Sample EDGES likelihood with polychord in yabf
 
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
@@ -23,8 +23,8 @@ class AbsorptionProfile(Component):
     # As a pre-flight test, let's fit fR and L_X param first
     # CJS: How does yabf know whether fR and L_X are astro (and not cosmo)?
     base_parameters = [
-        Parameter(name="fR", fiducial=2.0, min=1.0, max=7.0, latex="f_{R}"),
-        Parameter(name="L_X", fiducial=37.0, min=35.0, max=45.0, latex="L_x"),
+        Parameter(name="fR", fiducial=5.05, min=1.0, max=7.0, latex="f_{R}"),
+        Parameter(name="L_X", fiducial=42.0, min=35.0, max=45.0, latex="L_x"),
     ]
 
     observed_redshifts: np.ndarray = attr.ib(kw_only=True, eq=attr.cmp_using(eq=np.array_equal))
@@ -68,14 +68,14 @@ class AbsorptionProfile(Component):
         # spline requires z to be in increasing order
         z = lc.node_redshifts[-1:0:-1]
         T21 = lc.global_brightness_temp[-1:0:-1]
-        return spline(z, T21)(self.observed_redshifts)
+        return spline(z, T21)(self.observed_redshifts)/1000.0
 
     def spectrum(self, ctx, **params):
         # Don't change this.
         return ctx["eor_spectrum"]
 
 # ---- Let's run it! ----
-data = np.genfromtxt("Data_EDGES.txt")
+data = np.genfromtxt("data/Data_EDGES.txt")
 freq = data[:, 0]
 wght = data[:, 1]
 tsky = data[:, 2]
@@ -109,11 +109,11 @@ eor = AbsorptionProfile(
     flag_options = flag_options,
     astro_params = astro_params,
     params = {
-        'fR': {'min': 2.0, 'max': 7.0}, 
+        'fR': {'min': 1.0, 'max': 7.0}, 
         'L_X':{'min':37.0,'max':45.0}
     }, # these are the params that are actually fit. The names have to be in the `base_parameters` above
     cache_loc = '/home/dm/watson/21cmFAST-data/cache/',
-    run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03}
+    run_lightcone_kwargs = {"ZPRIME_STEP_FACTOR": 1.03, "write":False}
     )
 
 fg_model = LinLog(n_terms=5)
@@ -129,8 +129,8 @@ my_likelihood = LinearFG(freq=freq, t_sky=tsky, var=0.03**2, fg=fg_model, eor=eo
 sampler = polychord(
     my_likelihood.partial_linear_model,                  # The actual likelihood to sample from
     save_full_config = False,                            # Otherwise would save a YAML file that is hard to read.
-    output_dir = "Chains",                               # Directory in which to save all the output chains.
-    output_prefix = "PopII_Test",                        # A prefix for all files output.
+    output_dir = "data/polychord_v1",                               # Directory in which to save all the output chains.
+    output_prefix = "Pop_II_Test",                        # A prefix for all files output.
     # sampler_kwargs = {                                   # Anything that can be passed to PolychordSettings,
     #     "nlives": 256                                    # see https://github.com/PolyChord/PolyChordLite/pypolychord/settings.py#L5
     # }

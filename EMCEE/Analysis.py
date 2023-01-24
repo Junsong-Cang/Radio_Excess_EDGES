@@ -8,8 +8,8 @@ import emcee
 import corner
 import shutil
 
-ChainFile = "../Chains/Chains.h5"
-ConvergeFile = "../Chains/Status.h5"
+ChainFile = "../data/EMCEE_V1/Pop_II_Test_EMCEE_Chains.h5"
+ConvergeFile = "../data/EMCEE_V1/Pop_II_Test_EMCEE_Status.h5"
 labels = ["$\mathrm{log}_{10}f_{\mathrm{R}}$", "${\mathrm{log}}_{10}L_{\mathrm{X}}$"]
 
 Check_Interv = 10

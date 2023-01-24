@@ -1,4 +1,4 @@
-# # Magrinalise EDGES nuisance params
+# Sample EDGES likelihood with EMCEE in yabf
 
 from edges_estimate.likelihoods import LinearFG
 from edges_cal.modelling import LinLog
@@ -68,7 +68,7 @@ class AbsorptionProfile(Component):
         # spline requires z to be in increasing order
         z = lc.node_redshifts[-1:0:-1]
         T21 = lc.global_brightness_temp[-1:0:-1]
-        return spline(z, T21)(self.observed_redshifts)
+        return spline(z, T21)(self.observed_redshifts) / 1000.0
 
     def spectrum(self, ctx, **params):
         # Don't change this.
